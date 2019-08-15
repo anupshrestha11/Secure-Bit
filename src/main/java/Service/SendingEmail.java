@@ -6,9 +6,9 @@ import javax.mail.internet.MimeMessage;
 import java.util.Properties;
 
 public class SendingEmail {
-    public void mail(String key, String email) {
-        final String user = "anupshresth9@gmail.com";
-        final String password = "xuzvxaoztzdncvux";
+    public void mail(String key, String email, String ownerName, String fileName, Boolean check) {
+        final String user = "secure.every.bit@gmail.com";
+        final String password = "mbkbiyqxpwdmpdyb";
 
         String to = email;
 
@@ -31,14 +31,16 @@ public class SendingEmail {
             MimeMessage message = new MimeMessage(session);
             message.setFrom(new InternetAddress(user));
             message.addRecipient(Message.RecipientType.TO, new InternetAddress(to));
-            message.setSubject("Forgot Password");
-            message.setContent("<h3>Requested File key</h3><br><b>Code : </b>" + key, "text/html; charset=UTF-8"
-            );
+
+            message.setSubject("About The File Request ::::::::: Secure Bit");
+            if (check) {
+                message.setContent("<h3>Requested File key</h3><br><b>Code :" + key + "<br/>For File Name : " + fileName + "<br/> File Owner Name: " + ownerName + "</b>", "text/html; charset=UTF-8");
+            } else {
+                message.setContent("<h3>Requested File: " + fileName + " has been Rejected by Owner</h3>", "text/html; charset=UTF-8");
+            }
+
 
             Transport.send(message);
-
-            System.out.println("message sent successfully");
-
         } catch (MessagingException e) {
             e.printStackTrace();
         }

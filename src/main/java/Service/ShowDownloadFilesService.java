@@ -13,8 +13,10 @@ import java.util.List;
 public class ShowDownloadFilesService {
     private FileRequestData fileRequestData = new FileRequestData();
     ConnectToDB connectToDB = new ConnectToDB();
+    private int count = 0;
 
     public List<FileData> getAllDownloadFiles(String email) throws SQLException {
+        count = 0;
         String query = "SELECT fileId FROM requests where reuestingEmail=? and accept=?";
         Connection connection = connectToDB.getConnection();
         PreparedStatement preparedStatement = connection.prepareStatement(query);
@@ -36,9 +38,9 @@ public class ShowDownloadFilesService {
             ResultSet resultSet1 = preparedStatement1.executeQuery();
             while (resultSet1.next()) {
 
-                preparedStatement2.setInt(1,resultSet1.getInt("ownerId"));
+                preparedStatement2.setInt(1, resultSet1.getInt("ownerId"));
                 ResultSet resultSet2 = preparedStatement2.executeQuery();
-                while (resultSet2.next()){
+                while (resultSet2.next()) {
                     fileData.setOwnerName(resultSet2.getString("name"));
                     fileData.setEmail(resultSet2.getString("email"));
                 }
@@ -47,8 +49,16 @@ public class ShowDownloadFilesService {
             }
             fileData.setFileId(resultSet.getInt("fileId"));
             fileDataList.add(fileData);
-
+            count++;
         }
+        connection.close();
+
         return fileDataList;
     }
+
+    public int getCount() {
+        return count;
+    }
+
 }
+

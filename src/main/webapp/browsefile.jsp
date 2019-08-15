@@ -1,17 +1,42 @@
-<%@include file="session.jsp" %>
-<%@include file="header.jsp" %>
-<%@include file="navbar.jsp" %>
-<%
-    httpSession.getAttribute("securedFiles");
-%>
+<%@ page import="java.util.Date" %>
+<%@ page import="java.util.Calendar" %>
+<%@ page import="java.text.DateFormat" %>
+<%@ page import="java.text.SimpleDateFormat" %>
+<%@ taglib prefix="C" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@include file="loader.jsp"%>
 
-<form action="/search" method="get" class="form-inline my-2 my-lg-0 " style="display: flex; justify-content: right; ">
-    <div style="margin: 10px 50px;">
-        <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search" name="search">
-        <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
-    </div>
-</form>
-<table class="table table-striped text-center">
+<%@include file="navbars.jsp"%>
+<%
+    Date date= Calendar.getInstance().getTime();
+    DateFormat dateFormat=new SimpleDateFormat("hh:mm:ss");
+    String currentDate=dateFormat.format(date);
+
+%>
+<div id="content-wrapper">
+
+    <div class="container-fluid">
+
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item">
+                <a href="/dashboard">Dashboard</a>
+            </li>
+            <li class="breadcrumb-item active">Browse Files</li>
+        </ol>
+        <c:if test="${sessionScope.sendRequestMessage != null}">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item text-success">${sessionScope.sendRequestMessage}</li>
+            </ol>
+        </c:if>
+
+        <!-- DataTables Example -->
+        <div class="card mb-3">
+            <div class="card-header">
+                <i class="fas fa-table"></i>
+                Browse Files</div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+
     <thead>
     <th>s.n</th>
     <th>Owner Name</th>
@@ -32,8 +57,6 @@
                 <td><a href="/requestfile?id=<c:out value="${browse.fileId}"></c:out>">
                     <button class="btn btn-warning">RequestFile</button>
                 </a></td>
-                </td>
-                <td></td>
             </tr>
         </c:forEach>
     </c:if>
@@ -45,7 +68,7 @@
             <td><c:out value="${search.email}"></c:out></td>
             <td><c:out value="${search.orginalName}"></c:out></td>
             <td><c:out value="${search.fileDescription}"></c:out></td>
-            <td><a href="/requestfile?id=<c:out value="${browse.fileId}"></c:out>">
+            <td><a href="/requestfile?id=<c:out value="${search.fileId}"></c:out>">
                 <button class="btn btn-warning">RequestFile</button>
             </a></td>
             </td>
@@ -54,6 +77,23 @@
     </c:forEach>
     </tbody>
 </table>
+
 <%
     request.getSession().setAttribute("searchedFiles",null);
+%>
+
+                </div>
+            </div>
+            <div class="card-footer small text-muted">Last Refresh : <%=currentDate%>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+<%@include file="footer.jsp"%>
+<%
+    request.getSession().setAttribute("sendRequestMessage",null);
 %>

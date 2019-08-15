@@ -3,51 +3,78 @@ package Algorithm.AES;
 import java.util.ArrayList;
 
 public class AESMain {
-    private static String hexValueOfKey;
-    public static int encryptionAndDecryptionSeperator = 3;
-    private static Constants constants = new Constants();
-    private static TextToHex textToHex = new TextToHex();
-    private static String[][][] allRoundKeys = new String[11][4][4];
-    private static String hexValueofInput;
-    private static String inputState[][] = new String[4][4];
-    private static int roundNumber = 0;
-    private static ArrayList<String> Cipher = new ArrayList<>();
-    private static String cipherhex;
-private static String key;
+    private String hexValueOfKey;
+    public int encryptionAndDecryptionSeperator = 3;
+    private Constants constants;
+    private TextToHex textToHex;
+    private String[][][] allRoundKeys = new String[11][4][4];
+    private String hexValueofInput;
+    private String inputState[][] = new String[4][4];
+    private int roundNumber = 0;
+    private ArrayList<String> Cipher = new ArrayList<>();
+    private String cipherhex;
+    private String key;
 
-public void setKey(String keyforAes)
-{
-    this.key=keyforAes;
+    public void setKey(String keyforAes) {
 
-}
+        this.key = keyforAes;
+    }
 
-    public static String getKey() {
-        return key;
+    public String getKey() {
+        return this.key;
     }
 
     public String getCipherhex() {
         return cipherhex;
     }
 
-    public static void main(String input, int a) {
+    public void main(String input, int a,String key) {
+
+        setKey(key);
 
         if (a == 0) {
             encryptionAndDecryptionSeperator = 0;
-            Decryption decryption = new Decryption();
-            decryption.decrypt(input);
+            decrypt(input);
         }
         if (a == 1) {
             encryptionAndDecryptionSeperator = 1;
-            keyToAes(key);
+            keyToAes(getKey());
             inputToAes(input);
         }
     }
 
+    public void decrypt(String input) {
+//        aesMain.keyToAes("Thats my Kung Fu");
+        keyToAes(getKey());
+        String[][][] returnedAllKey = new String[11][4][4];
+        String[][][] reversedKey = new String[11][4][4];
+
+        returnedAllKey = getAllRoundKeys();
+        reversedKey = reverseTheKeys(reversedKey, returnedAllKey);
+        setAllRoundKeys(reversedKey);
+        inputToAes(input);
+    }
+
+    private  String[][][] reverseTheKeys(String[][][] reversedKey, String[][][] returnedAllKey) {
+        int k = 10;
+        for (int l = 0; l < 11; l++) {
+            for (int i = 0; i < 4; i++) {
+                for (int j = 0; j < 4; j++) {
+                    reversedKey[k][i][j] = returnedAllKey[l][i][j];
+                }
+            }
+            k--;
+        }
+        return reversedKey;
+
+
+    }
+
     //////////////////////////////////key Expansion
-    public static void keyToAes(String key128Bit) {
+    public void keyToAes(String key128Bit) {
 //omly 128 bit key
         String key = key128Bit;
-
+        textToHex = new TextToHex();
         hexValueOfKey = textToHex.asciiToHex(key);
         //making key 128 bit if its not of that size
         while ((hexValueOfKey.length() < 32)) {
@@ -60,7 +87,7 @@ public void setKey(String keyforAes)
 
 
     //filling 128 bit key into state
-    private static void fillKeyState() {
+    private void fillKeyState() {
 
         int tempVariable = 0;
         for (int i = 0; i < 4; i++) {
@@ -77,7 +104,7 @@ public void setKey(String keyforAes)
         }
     }
 
-    private static void keyExpansion(int k) {
+    private void keyExpansion(int k) {
         String[] word1 = new String[4];
         String[] word2 = new String[4];
         String[] word3 = new String[4];
@@ -105,7 +132,7 @@ public void setKey(String keyforAes)
 
     }
 
-    private static String[] rotWord(String wordFour[]) {
+    private String[] rotWord(String wordFour[]) {
         String temp = wordFour[0];
         wordFour[0] = wordFour[1];
         wordFour[1] = wordFour[2];
@@ -114,17 +141,19 @@ public void setKey(String keyforAes)
         return wordFour;
     }
 
-    private static String[] byteSub(String wordFour[]) {
+    private String[] byteSub(String wordFour[]) {
         for (int i = 0; i < 4; i++) {
             String temp = wordFour[i];
+            constants = new Constants();
             wordFour[i] = constants.getSboxValue(Character.getNumericValue(temp.charAt(0)), Character.getNumericValue(temp.charAt(1)));
         }
         return wordFour;
     }
 
-    private static String[] addRoundConstant(String wordFour[], int k) {
+    private String[] addRoundConstant(String wordFour[], int k) {
         for (int i = 0; i < 4; i++) {
             String temp = wordFour[i];
+            constants = new Constants();
             String temp1 = constants.getRoundConstat(i, k - 1);
             String addRoundFirst = Integer.toHexString(Character.getNumericValue(temp.charAt(0)) ^ Character.getNumericValue(temp1.charAt(0)));
             addRoundFirst = addRoundFirst + Integer.toHexString(Character.getNumericValue(temp.charAt(1)) ^ Character.getNumericValue(temp1.charAt(1)));
@@ -136,7 +165,7 @@ public void setKey(String keyforAes)
         return wordFour;
     }
 
-    private static String[] xorWithOtherWords(String[] firstWord, String[] secondWord) {
+    private String[] xorWithOtherWords(String[] firstWord, String[] secondWord) {
         for (int i = 0; i < 4; i++) {
             String temp = firstWord[i];
             String temp1 = secondWord[i];
@@ -150,7 +179,7 @@ public void setKey(String keyforAes)
 
     }
 
-    private static void addWordtoAllRoundKey(int colNumber, int k, String[] word) {
+    private void addWordtoAllRoundKey(int colNumber, int k, String[] word) {
         for (int j = 0; j < 4; j++) {
 
             allRoundKeys[k][j][colNumber] = word[j];
@@ -158,20 +187,20 @@ public void setKey(String keyforAes)
 
     }
 
-    public static String[][][] getAllRoundKeys() {
+    public String[][][] getAllRoundKeys() {
 
         return allRoundKeys;
 
     }
 
-    public static void setAllRoundKeys(String[][][] reversedRoundKeys) {
+    public void setAllRoundKeys(String[][][] reversedRoundKeys) {
         allRoundKeys = reversedRoundKeys;
 
     }
 /////////////////////////keyExpanison ENds
 
 
-    public static void inputToAes(String inupt) {
+    public void inputToAes(String inupt) {
         String tempInputOf128Bit = "";
         hexValueofInput = inupt;
         for (int i = 0; i < hexValueofInput.length(); i++) {
@@ -186,7 +215,7 @@ public void setKey(String keyforAes)
 
     }
 
-    private static void plainTextToState(String inputToState) {
+    private void plainTextToState(String inputToState) {
         int tempVariable = 0;
         for (int i = 0; i < 4; i++) {
             for (int j = 0; j < 4; j++) {
@@ -203,16 +232,16 @@ public void setKey(String keyforAes)
 
 
     //Aes Rounds
-    static String[] keyword1 = new String[4];
-    static String[] keyword2 = new String[4];
-    static String[] keyword3 = new String[4];
-    static String[] keyword4 = new String[4];
-    static String[] inputword1 = new String[4];
-    static String[] inputword2 = new String[4];
-    static String[] inputword3 = new String[4];
-    static String[] inputword4 = new String[4];
+    String[] keyword1 = new String[4];
+    String[] keyword2 = new String[4];
+    String[] keyword3 = new String[4];
+    String[] keyword4 = new String[4];
+    String[] inputword1 = new String[4];
+    String[] inputword2 = new String[4];
+    String[] inputword3 = new String[4];
+    String[] inputword4 = new String[4];
 
-    private static void inputStateToWord() {
+    private void inputStateToWord() {
         for (int j = 0; j < 4; j++) {
 
             inputword1[j] = inputState[j][0];
@@ -225,7 +254,7 @@ public void setKey(String keyforAes)
 
     }
 
-    private static void keyStateToWord(int roundNo) {
+    private void keyStateToWord(int roundNo) {
         for (int j = 0; j < 4; j++) {
             keyword1[j] = allRoundKeys[roundNo][j][0];
             keyword2[j] = allRoundKeys[roundNo][j][1];
@@ -235,7 +264,7 @@ public void setKey(String keyforAes)
         }
     }
 
-    private static void aesRounds() {
+    private void aesRounds() {
 
         inputStateToWord();
         if (roundNumber == 0) {
@@ -280,7 +309,7 @@ public void setKey(String keyforAes)
         addStateToCipherList();
     }
 
-    private static void addStateToCipherList() {
+    private void addStateToCipherList() {
         String cipherOfTheState = "";
         for (int i = 0; i < 4; i++) {
             for (int j = 0; j < 4; j++) {
@@ -301,10 +330,11 @@ public void setKey(String keyforAes)
 
         }
         cipherhex = cipherOfTheState;
+        textToHex = new TextToHex();
         Cipher.add(textToHex.convertHexToString(cipherOfTheState));
     }
 
-    private static void callMixColumns() {
+    private void callMixColumns() {
         if (encryptionAndDecryptionSeperator == 1) {
             inputword1 = mixColumns(inputword1);
             inputword2 = mixColumns(inputword2);
@@ -319,7 +349,7 @@ public void setKey(String keyforAes)
         }
     }
 
-    private static void subBytesInROunds() {
+    private void subBytesInROunds() {
         if (encryptionAndDecryptionSeperator == 1) {
             inputword1 = byteSub(inputword1);
             inputword2 = byteSub(inputword2);
@@ -334,14 +364,14 @@ public void setKey(String keyforAes)
         }
     }
 
-    private static void xorInROunds() {
+    private void xorInROunds() {
         inputword1 = xorWithOtherWords(keyword1, inputword1);
         inputword2 = xorWithOtherWords(keyword2, inputword2);
         inputword3 = xorWithOtherWords(keyword3, inputword3);
         inputword4 = xorWithOtherWords(keyword4, inputword4);
     }
 
-    private static void rotWordsInRound(String[] word1, String[] word2, String[] word3, String[] word4) {
+    private void rotWordsInRound(String[] word1, String[] word2, String[] word3, String[] word4) {
         //have to hard code due to manipulating words instead of matrix
         String temp, temp1, temp2;
         temp = word1[1];
@@ -366,7 +396,8 @@ public void setKey(String keyforAes)
         word4[3] = temp2;
     }
 
-    private static String[] mixColumns(String[] word) {
+    private String[] mixColumns(String[] word) {
+        constants = new Constants();
         String tempString;
         String[] returnArray = new String[4];
         for (int i = 0; i < 4; i++) {
@@ -397,7 +428,7 @@ public void setKey(String keyforAes)
         return returnArray;
     }
 
-    private static String xorTwoStrings(String string1, String string2) {
+    private String xorTwoStrings(String string1, String string2) {
         String finalResult = "";
         for (int i = 0; i < string1.length(); i++) {
             finalResult += string1.charAt(i) ^ string2.charAt(i);
@@ -405,7 +436,7 @@ public void setKey(String keyforAes)
         return finalResult;
     }
 
-    private static String leftShiftString(String shiftThisString) {
+    private String leftShiftString(String shiftThisString) {
         String result = "";
         char checkFirstBit = shiftThisString.charAt(0);
         for (int i = 1; i < shiftThisString.length(); i++) {
@@ -419,15 +450,17 @@ public void setKey(String keyforAes)
         return result;
     }
 
-    private static String[] inverseByteSub(String wordFour[]) {
+    private String[] inverseByteSub(String wordFour[]) {
         for (int i = 0; i < 4; i++) {
+            constants = new Constants();
             String temp = wordFour[i];
             wordFour[i] = constants.getInverseSboxValue(Character.getNumericValue(temp.charAt(0)), Character.getNumericValue(temp.charAt(1)));
         }
         return wordFour;
     }
 
-    private static String[] InversemixColumns(String[] word) {
+    private String[] InversemixColumns(String[] word) {
+        constants = new Constants();
         String tempString;
         String[] returnArray = new String[4];
         for (int i = 0; i < 4; i++) {

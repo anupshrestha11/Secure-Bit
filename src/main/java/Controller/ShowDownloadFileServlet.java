@@ -19,13 +19,13 @@ public class ShowDownloadFileServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 
-        new SessionChecker(req,resp);
-ShowDownloadFilesService showDownloadFilesService = new ShowDownloadFilesService();
+        new SessionChecker(req, resp);
+        ShowDownloadFilesService showDownloadFilesService = new ShowDownloadFilesService();
         try {
             List<FileData> fileDataList = showDownloadFilesService.getAllDownloadFiles(req.getSession().getAttribute("userEmail").toString());
             req.getSession().setAttribute("acceptedFiles", fileDataList);
-        }
-        catch (SQLException e){
+            req.getSession().setAttribute("downloadCount", showDownloadFilesService.getCount());
+        } catch (SQLException e) {
             e.printStackTrace();
         }
 
@@ -33,6 +33,6 @@ ShowDownloadFilesService showDownloadFilesService = new ShowDownloadFilesService
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        new SessionChecker(req,resp);
+        new SessionChecker(req, resp);
     }
 }

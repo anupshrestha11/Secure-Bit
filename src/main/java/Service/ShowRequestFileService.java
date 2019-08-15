@@ -11,8 +11,11 @@ import java.util.List;
 
 public class ShowRequestFileService {
     private ConnectToDB connectToDB = new ConnectToDB();
+    private int count = 0;
 
     public List<FileRequestData> getAllRequestData(int sessionId) throws SQLException {
+
+        count = 0;
         String query = "select * from  requests where ownerId=? and accept = ?";
         Connection connection = connectToDB.getConnection();
         PreparedStatement preparedStatement = connection.prepareStatement(query);
@@ -28,11 +31,16 @@ public class ShowRequestFileService {
             fileRequestData.setRequestingUserName(resultSet.getString("requestingUser"));
             fileRequestData.setFileDescription(resultSet.getString("filediscription"));
             fileRequestDataList.add(fileRequestData);
-
+            count++;
         }
+        connection.close();
+
         return fileRequestDataList;
 
     }
 
+    public int getCount() {
+        return count;
+    }
 
 }

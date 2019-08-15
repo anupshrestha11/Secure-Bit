@@ -4,7 +4,7 @@ import Algorithm.AES.AESMain;
 import Algorithm.CBC.CBC;
 import Data.FileData;
 import Service.DownloadFileService;
-import Service.MaintainSize;
+import Service.UniqueKeyGenerator;
 import SessionCheckerServlet.SessionChecker;
 
 import javax.servlet.ServletContext;
@@ -19,9 +19,8 @@ import java.nio.file.Paths;
 import java.sql.SQLException;
 
 public class DownloadFileServlet extends HttpServlet {
-    private CBC cbc = new CBC();
-    private AESMain aesMain = new AESMain();
-    private MaintainSize maintainSize = new MaintainSize();
+    private CBC cbc;
+    private AESMain aesMain ;
 
 
     @Override
@@ -31,6 +30,7 @@ public class DownloadFileServlet extends HttpServlet {
         int fileId = Integer.parseInt(req.getParameter("fileId"));
         DownloadFileService downloadFileService = new DownloadFileService();
         FileData fileData = new FileData();
+        cbc=new CBC();
         try {
             fileData = downloadFileService.downloadFile(fileId);
         } catch (SQLException e) {
@@ -40,40 +40,27 @@ public class DownloadFileServlet extends HttpServlet {
             req.getRequestDispatcher("/download.jsp").forward(req, resp);
         }
 
-
-        String uniqueKey = null;
-        String ownerUserName=maintainSize.getMaintainedSize(fileData.getKeyForEncryption(),fileData.getOwnerUserName());
-        String requestingUserName=maintainSize.getMaintainedSize(fileData.getKeyForEncryption(),(String)(req.getSession().getAttribute("userName")));
-
-        ownerUserName= DatatypeConverter.printHexBinary(ownerUserName.getBytes());
-        requestingUserName=DatatypeConverter.printHexBinary(requestingUserName.getBytes());
-        String[] Random=cbc.XorOperation((ownerUserName.split("")),requestingUserName.split(""));
-        String key=DatatypeConverter.printHexBinary(fileData.getKeyForEncryption().getBytes());
-        uniqueKey = cbc.ArrayToString(cbc.XorOperation(Random, key.split("")));
-        System.out.println(uniqueKey);
-
-
+        UniqueKeyGenerator uniqueKeyGenerator = new UniqueKeyGenerator(fileData.getKeyForEncryption(), fileData.getOwnerUserName(),((String) (req.getSession().getAttribute("userName"))));
+        String uniqueKey = uniqueKeyGenerator.getUniqueKey();
 
         if (uniqueKey.equalsIgnoreCase(enteredKey)) {
 
-            aesMain.setKey(fileData.getKeyForEncryption());
 
             String applicationPath = getServletContext().getRealPath("");
             String downloadPath = applicationPath + File.separator + fileData.getOwnerId();
             String filePath = downloadPath + File.separator + fileData.getEncryptedName() + ".txt";
             Path path = Paths.get(filePath);
 
-            String newFilePath = downloadPath + File.separator + fileData.getOrginalName();
+            String newFilePath = downloadPath + File.separator + req.getSession().getAttribute("userId")+fileData.getOrginalName();
 
             File file = new File(newFilePath);
             file.createNewFile();
 
-            cbc.CbcDecrypt(path, fileData.getOrginalName(), new File(downloadPath + File.separator));
-
+            cbc.CbcDecrypt(path, req.getSession().getAttribute("userId")+fileData.getOrginalName(), new File(downloadPath + File.separator),fileData.getKeyForEncryption());
             File downloadFile = new File(newFilePath);
             FileInputStream inStream = new FileInputStream(downloadFile);
 
-            String relativePath = getServletContext().getRealPath("");
+
 
             ServletContext context = getServletContext();
 
@@ -85,7 +72,7 @@ public class DownloadFileServlet extends HttpServlet {
             resp.setContentLength((int) downloadFile.length());
 
             String headerKey = "Content-Disposition";
-            String headerValue = String.format("attachment; filename=\"%s\"", downloadFile.getName());
+            String headerValue = String.format("attachment; filename=\"%s\"", fileData.getOrginalName());
             resp.setHeader(headerKey, headerValue);
 
             OutputStream outStream = resp.getOutputStream();
@@ -102,7 +89,7 @@ public class DownloadFileServlet extends HttpServlet {
             file.delete();
 
         } else {
-            req.getSession().setAttribute("downloadError", "Please enter valid key");
+            req.getSession().setAttribute("downloadError", "Please Enter Valid key");
         }
         req.getRequestDispatcher("/download.jsp").forward(req, resp);
 

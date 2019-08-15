@@ -92,4 +92,29 @@
     <servlet-name>requestAccept</servlet-name>
     <url-pattern>/requestAccept</url-pattern>
   </servlet-mapping>
+  
+  <servlet>
+    <servlet-name>requestdelete</servlet-name>
+ <servlet-class>Controller.RequestDeleteServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>requestdelete</servlet-name>
+    <url-pattern>/deleterequest</url-pattern>
+  </servlet-mapping>
+  <servlet>
+    <servlet-name>verifyEmail</servlet-name>
+    <servlet-class>Controller.VerifyEmailServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>verifyEmail</servlet-name>
+    <url-pattern>/verifyEmail</url-pattern>
+  </servlet-mapping>
+  <servlet>
+    <servlet-name>downloadMyFile</servlet-name>
+    <servlet-class>Controller.DownloadMyFileServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>downloadMyFile</servlet-name>
+    <url-pattern>/downloadMyFile</url-pattern>
+  </servlet-mapping>
 </web-app>

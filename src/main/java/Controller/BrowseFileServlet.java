@@ -15,32 +15,23 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class BrowseFileServlet extends HttpServlet {
-private BrowseDataService browseDataService=new BrowseDataService();
+    private BrowseDataService browseDataService = new BrowseDataService();
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
 
-        new SessionChecker(request,response);
+        new SessionChecker(request, response);
 
-        List<FileData> fileDataList=new ArrayList<>();
+        List<FileData> fileDataList = new ArrayList<>();
         try {
             fileDataList = browseDataService.getData(((Integer) request.getSession().getAttribute("userId")).intValue());
-        request.getSession().setAttribute("browseFiles",fileDataList);
+            request.getSession().setAttribute("browseFiles", fileDataList);
+            request.getSession().setAttribute("totalBrowseFiles", browseDataService.getCount());
 
-        }
-        catch (SQLException e)
-        {
+        } catch (SQLException e) {
             e.printStackTrace();
         }
-
-
-
-
-
-
-
-
 
 
     }

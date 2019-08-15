@@ -15,22 +15,22 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ShowFileRequestServlet extends HttpServlet {
-private ShowRequestFileService showRequestFileService=new ShowRequestFileService();
+    private ShowRequestFileService showRequestFileService = new ShowRequestFileService();
+
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        new SessionChecker(request,response);
-        int sessionId=((Integer)request.getSession().getAttribute("userId")).intValue();
+        new SessionChecker(request, response);
+        int sessionId = ((Integer) request.getSession().getAttribute("userId")).intValue();
 
         try {
-            List<FileRequestData> fileRequestData=new ArrayList<>();
+            List<FileRequestData> fileRequestData = new ArrayList<>();
 
-            fileRequestData=showRequestFileService.getAllRequestData(sessionId);
-        request.getSession().setAttribute("requestFiles",fileRequestData);
-        }catch (SQLException s)
-        {
+            fileRequestData = showRequestFileService.getAllRequestData(sessionId);
+            request.getSession().setAttribute("requestCount", showRequestFileService.getCount());
+            request.getSession().setAttribute("requestFiles", fileRequestData);
+        } catch (SQLException s) {
             s.printStackTrace();
         }
-
 
 
     }

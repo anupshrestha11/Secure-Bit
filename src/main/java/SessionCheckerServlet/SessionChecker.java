@@ -8,30 +8,26 @@ import javax.servlet.http.HttpSession;
 import java.io.IOException;
 
 public class SessionChecker {
-    public SessionChecker (HttpServletRequest request, HttpServletResponse response) throws ServletException,IOException {
+    public SessionChecker(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         HttpSession session = request.getSession();
-        if (session.getAttribute("userName") == null||session==null) {
-            request.getRequestDispatcher("/login.jsp").forward(request,response);
+        if (session.getAttribute("userName") == null || session == null) {
+            request.getRequestDispatcher("/index.jsp").forward(request, response);
         }
     }
 
 
-    public Boolean isSessionActive(HttpServletRequest request)
-    {
-        HttpSession httpSession=request.getSession();
-        if(httpSession.getAttribute("userName")==null)
-        {
+    public Boolean isSessionActive(HttpServletRequest request) {
+        HttpSession httpSession = request.getSession();
+        if (httpSession.getAttribute("userName") == null) {
             return false;
 
-        }
-        else {
+        } else {
 
 
             return true;
         }
 
     }
-
 
 
 }

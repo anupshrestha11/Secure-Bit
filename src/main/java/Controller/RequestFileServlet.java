@@ -13,18 +13,20 @@ import java.io.IOException;
 import java.sql.SQLException;
 
 public class RequestFileServlet extends HttpServlet {
-private RequestFileService requestFileService=new RequestFileService();
+    private RequestFileService requestFileService = new RequestFileService();
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        new SessionChecker(request,response);
+        new SessionChecker(request, response);
         try {
             requestFileService.getFromFileId((Integer.parseInt(request.getParameter("id"))), request);
-            response.sendRedirect("/dashboard");
-        }
-        catch (SQLException e)
-        {
+            if (request.getSession().getAttribute("sendRequestMessage") == null) {
+                request.getSession().setAttribute("sendRequestMessage", "Request Has Been Send");
+            }
+            response.sendRedirect("/browsefile.jsp");
+        } catch (SQLException e) {
 
+            request.getSession().setAttribute("sendRequestMessage", "Unsuccessfull to send request");
             e.printStackTrace();
         }
 

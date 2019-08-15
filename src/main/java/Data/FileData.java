@@ -1,6 +1,8 @@
 package Data;
 
-public class FileData {
+import java.io.Serializable;
+
+public class FileData implements Serializable {
     private int fileId;
     private int ownerId;
     private String ownerName;

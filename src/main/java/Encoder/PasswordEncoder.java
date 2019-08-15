@@ -1,14 +1,17 @@
 package Encoder;
 
+
 import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+
 
 public class PasswordEncoder {
 
     //hashing password with sha-512
 
-    protected String sha512PasswordEncoder(String input) throws NoSuchAlgorithmException {
+
+    public String sha512PasswordEncoder(String input) throws NoSuchAlgorithmException {
         MessageDigest messageDigest = MessageDigest.getInstance("SHA-512");
         //digest method with input password returns array of byte
         byte[] message = messageDigest.digest(input.getBytes());

@@ -2,14 +2,24 @@ package Data;
 
 import Encoder.PasswordEncoder;
 
+import java.io.Serializable;
 import java.security.NoSuchAlgorithmException;
 
-public class SignupData extends PasswordEncoder{
+public class SignupData extends PasswordEncoder implements Serializable {
     private String fullName;
     private String Email;
     private String userName;
     private String Password;
     private int userId;
+    private String encodedPassword;
+
+    public String getEncodedPassword() {
+        return encodedPassword;
+    }
+
+    public void setEncodedPassword(String encodedPassword) {
+        this.encodedPassword = encodedPassword;
+    }
 
     public int getUserId() {
         return userId;
@@ -47,14 +57,12 @@ public class SignupData extends PasswordEncoder{
         return Password;
     }
 
-    public void setPassword(String password)  {
+    public void setPassword(String password) {
 
-       try {
-           this.Password = sha512PasswordEncoder(password);
-       }
-       catch (NoSuchAlgorithmException e)
-       {
-           e.printStackTrace();
-       }
-       }
+        try {
+            this.Password = sha512PasswordEncoder(password);
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        }
+    }
 }

@@ -18,13 +18,13 @@ public class SearchFileServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 
-        new SessionChecker(req,resp);
+        new SessionChecker(req, resp);
         SearchFileservice searchFileservice = new SearchFileservice();
 
         List<FileData> fileDataList = new ArrayList<>();
 
         try {
-            fileDataList = searchFileservice.SearchFile(req.getParameter("search"));
+            fileDataList = searchFileservice.SearchFile(req.getParameter("search"), ((Integer) req.getSession().getAttribute("userId")).intValue());
             req.getSession().setAttribute("searchedFiles", fileDataList);
 
         } catch (SQLException e) {

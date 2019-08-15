@@ -18,7 +18,7 @@ public class ConnectToDB {
         }
         Connection connection = DriverManager.getConnection("jdbc:mysql://" + hostName + "/" + databasename, username, password);
 
-        System.out.println("Database Connection Sucessful");
+
         return connection;
     }
 }

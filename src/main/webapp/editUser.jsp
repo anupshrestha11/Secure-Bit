@@ -10,7 +10,8 @@
         <br>
         <div class="form-group">
             <label>Name</label>
-            <input type="text" name="name" class="form-control" value="<c:out value="${UserDatas.name}"></c:out>" placeholder="Enter Name"
+            <input type="text" name="name" class="form-control" value="<c:out value="${UserDatas.name}"></c:out>"
+                   placeholder="Enter Name"
                    required/>
         </div>
         <div class="form-group">
@@ -20,7 +21,8 @@
         </div>
         <div class="form-group">
             <label>Username</label>
-            <input type="text" name="username" class="form-control" disabled value="<c:out value="${UserDatas.username}"></c:out>"
+            <input type="text" name="username" class="form-control" disabled
+                   value="<c:out value="${UserDatas.username}"></c:out>"
                    placeholder="Enter Username" required/>
         </div>
         <div class="form-group">

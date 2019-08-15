@@ -12,7 +12,7 @@ import java.sql.SQLException;
 public class RequestFileService {
     private ConnectToDB connectToDB = new ConnectToDB();
     private FileRequestData fileRequestData = new FileRequestData();
-     private FileData fileData=new FileData();
+    private FileData fileData = new FileData();
 
     public void getFromFileId(int fileId, HttpServletRequest request) throws SQLException {
         String query = "Select * from files where fileId=?";
@@ -53,10 +53,10 @@ public class RequestFileService {
         PreparedStatement preparedStatement = connection.prepareStatement(query);
         preparedStatement.setInt(1, fileRequestData.getOwnerId());
         preparedStatement.setInt(2, fileRequestData.getFileId());
-        preparedStatement.setString(3,fileRequestData.getRequestingUserEmail());
+        preparedStatement.setString(3, fileRequestData.getRequestingUserEmail());
         ResultSet resultSet = preparedStatement.executeQuery();
         if (resultSet.next()) {
-            request.getSession().setAttribute("uploadMessage", "You Have Pending Request For File");
+            request.getSession().setAttribute("sendRequestMessage", "You Have Pending Request For File");
             return;
 
         } else {
@@ -76,39 +76,40 @@ public class RequestFileService {
 
         String q1 = "Select * From files where fileId = (Select fileId from requests where requestId =? and accept = ?) ";
         PreparedStatement preparedStatement1 = connection.prepareStatement(q1);
-        preparedStatement1.setInt(1,requestId);
-        preparedStatement1.setBoolean(2,true);
-        ResultSet resultSet=preparedStatement1.executeQuery();
+        preparedStatement1.setInt(1, requestId);
+        preparedStatement1.setBoolean(2, true);
+        ResultSet resultSet = preparedStatement1.executeQuery();
 
         String q2 = "select * from requests where requestId = ?";
         PreparedStatement preparedStatement3 = connection.prepareStatement(q2);
-        preparedStatement3.setInt(1,requestId);
+        preparedStatement3.setInt(1, requestId);
         ResultSet resultSet3 = preparedStatement3.executeQuery();
-        if (resultSet3.next()){
+        if (resultSet3.next()) {
             fileData.setEmail(resultSet3.getString("reuestingEmail"));
         }
 
-        if(resultSet.next())
-        {
+        if (resultSet.next()) {
             fileData.setKeyForEncryption(resultSet.getString("encryptionKey"));
-
+            fileData.setOrginalName(resultSet.getString("originalname"));
+            fileData.setOwnerId(resultSet.getInt("ownerId"));
         }
-
-
-        String query1="select * from users where email=?";
-        PreparedStatement preparedStatement2=connection.prepareStatement(query1);
-
-preparedStatement2.setString(1,fileData.getEmail());
-        ResultSet resultSet1=preparedStatement2.executeQuery();
-        if(resultSet1.next())
-        {
-
+        String query1 = "select * from users where email=?";
+        PreparedStatement preparedStatement2 = connection.prepareStatement(query1);
+        preparedStatement2.setString(1, fileData.getEmail());
+        ResultSet resultSet1 = preparedStatement2.executeQuery();
+        if (resultSet1.next()) {
             fileData.setRequestingUserName(resultSet1.getString("username"));
-
+        }
+        String query2 = "select * from users where id=?";
+        PreparedStatement preparedStatement4 = connection.prepareStatement(query2);
+        preparedStatement4.setInt(1, fileData.getOwnerId());
+        ResultSet resultSet2 = preparedStatement4.executeQuery();
+        if (resultSet2.next()) {
+            fileData.setOwnerName(resultSet2.getString("name"));
 
         }
-
-return fileData;
+        connection.close();
+        return fileData;
 
 
     }

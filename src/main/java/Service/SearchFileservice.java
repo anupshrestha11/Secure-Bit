@@ -11,18 +11,17 @@ import java.util.List;
 
 public class SearchFileservice {
     ConnectToDB connectToDB = new ConnectToDB();
-    ConnectToDB connectToDB1 = new ConnectToDB();
-    public List<FileData> SearchFile(String searchStr) throws SQLException {
-        String query = "SELECT * FROM files WHERE originalname LIKE ?";
+    public List<FileData> SearchFile(String searchStr,int ownerId) throws SQLException {
+        String query = "SELECT * FROM files WHERE originalname LIKE ? AND ownerId!=?";
         Connection connection = connectToDB.getConnection();
         PreparedStatement preparedStatement = connection.prepareStatement(query);
         preparedStatement.setString(1, "%"+searchStr+"%");
+        preparedStatement.setInt(2,ownerId);
         ResultSet resultSet = preparedStatement.executeQuery();
         List<FileData> fileDataLists=new ArrayList<>();
 
         String query1="select * from users where id=?";
-        Connection connection1=connectToDB1.getConnection();
-        PreparedStatement preparedStatement1=connection1.prepareStatement(query1);
+        PreparedStatement preparedStatement1=connection.prepareStatement(query1);
 
         while(resultSet.next())
         {
@@ -47,6 +46,7 @@ public class SearchFileservice {
             fileDataLists.add(fileData);
         }
 
+        connection.close();
         return fileDataLists;
     }
 }
